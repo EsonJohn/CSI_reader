@@ -2,6 +2,7 @@ import numpy as np
 import math
 
 
+# Return [p1,p2,...], pi={...,'Nrx':Nrx,...,'csi':csi}
 def read_bf_file(filename, decoder="python"):
 
     with open(filename, "rb") as f:
@@ -49,10 +50,6 @@ def read_bf_file(filename, decoder="python"):
             perm[0] = ((antenna_sel) & 0x3)
             perm[1] = ((antenna_sel >> 2) & 0x3)
             perm[2] = ((antenna_sel >> 4) & 0x3)
-
-            
-            
-
             
             #Check that length matches what it should
             if (b_len != calc_len):
@@ -163,12 +160,12 @@ def get_total_rss(csi_st):
         rssi_mag = rssi_mag + dbinv(csi_st['rssi_c'])
     return db(rssi_mag, 'power') - 44 - csi_st['agc']
 
-    
+
+# Return one ndarray of csi [NTx, NRx, 30]
 def get_scale_csi(csi_st):
     #Pull out csi
     csi = csi_st['csi']
-    # print(csi.shape)
-    # print(csi)
+    
     #Calculate the scale factor between normalized CSI and RSSI (mW)
     csi_sq = np.multiply(csi, np.conj(csi)).real
     csi_pwr = np.sum(csi_sq, axis=0)
@@ -192,3 +189,15 @@ def get_scale_csi(csi_st):
     elif csi_st['Ntx'] == 3:
         ret = ret * math.sqrt(dbinv(4.5))
     return ret
+
+
+# Return one timestamp
+def get_timestamp(csi_st):
+    timestamp = float(csi_st['timestamp_low'])
+    return timestamp
+
+# Callable Interface, return shape: csi:[time, Ntx, NRx, 30], timestamp:[1, time]
+# NTx: number of transmitter; NRx: number of receiver; 30: number of subcarriers
+def csi_get_all(path):
+    bf = read_bf_file(path)
+    return np.array(list(map(get_scale_csi,bf))), np.array(list(map(get_timestamp,bf)))

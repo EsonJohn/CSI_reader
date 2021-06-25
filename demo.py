@@ -1,14 +1,11 @@
-import matplotlib.pyplot as plt
 from wifilib import *
+import matplotlib.pyplot as plt
 
-path = r"./run_lh_1.dat"
+# Interface
+csi_np, timestamp = csi_get_all("./data_sample.dat")
 
-bf = read_bf_file(path)
-csi_list = list(map(get_scale_csi,bf))
-csi_np = (np.array(csi_list))
-csi_amp = np.abs(csi_np)
-
+# Visualization
 print("csi shape: ",csi_np.shape)
 fig = plt.figure()
-plt.plot(csi_amp[:,0,0,3])
+plt.plot(np.abs(csi_np)[:,0,0,0])
 plt.show()
