@@ -39,4 +39,12 @@ timestamp:[1, time]
 NTx: number of transmitter; NRx: number of receiver; 30: number of subcarriers;
 
 
-
+# Bug Fix
+Function *get_scale_csi* will have NaN value, induced by zero elements in *csi_pwr* variable, fixed by substituting:
+```
+csi_pwr = np.sum(csi_sq, axis=-1)
+```
+with
+```
+csi_pwr = np.sum(csi_sq)
+```

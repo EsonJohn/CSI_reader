@@ -168,8 +168,7 @@ def get_scale_csi(csi_st):
     
     #Calculate the scale factor between normalized CSI and RSSI (mW)
     csi_sq = np.multiply(csi, np.conj(csi)).real
-    csi_pwr = np.sum(csi_sq, axis=0)
-    csi_pwr = csi_pwr.reshape(1, csi_pwr.shape[0], -1)
+    csi_pwr = np.sum(csi_sq)
     rssi_pwr = dbinv(get_total_rss(csi_st))
 
     scale = rssi_pwr / (csi_pwr / 30)
